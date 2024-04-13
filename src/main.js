@@ -1,4 +1,5 @@
 'use strict';
+
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const path = require('path');
@@ -7,7 +8,7 @@ const wpilib_NT = require('wpilib-nt-client');
 const client = new wpilib_NT.Client();
 
 // The client will try to reconnect after 1 second
-client.setReconnectDelay(1000)
+client.setReconnectDelay(500);
 
 /** Module to control application life. */
 const app = electron.app;
@@ -46,7 +47,7 @@ function createWindow() {
     client.start((con, err) => {
 
         let connectFunc = () => {
-            console.log('Sending status');
+            // console.log('Sending status');
             mainWindow.webContents.send('connected', con);
 
             // Listens to the changes coming from the client
@@ -76,7 +77,7 @@ function createWindow() {
     ipc.on('connect', (ev, address, port) => {
         console.log(`Trying to connect to ${address}` + (port ? ':' + port : ''));
         let callback = (connected, err) => {
-            console.log('Sending status');
+            // console.log('Sending status');
             mainWindow.webContents.send('connected', connected);
         };
         if (port) {

@@ -1,14 +1,15 @@
 
-var NetworkTables =
+const NetworkTables =
     (() => {
-        let keys = {}, connectionListeners = [], connected = false, globalListeners = [], keyListeners = {}, robotAddress = '127.0.0.1';
+        let keys = {}, connectionListeners = [], connected = false, globalListeners = [], keyListeners = {},
+            robotAddress = '127.0.0.1';
         window.api.sendReady();
         window.api.onConnected((ev, con) => {
             connected = con;
             connectionListeners.map(e => e(con));
         });
         window.api.onAdd((ev, mesg) => {
-            keys[mesg.key] = { val: mesg.val, valType: mesg.valType, id: mesg.id, flags: mesg.flags, new: true };
+            keys[mesg.key] = {val: mesg.val, valType: mesg.valType, id: mesg.id, flags: mesg.flags, new: true};
             globalListeners.map(e => e(mesg.key, mesg.val, true));
             if (globalListeners.length > 0)
                 keys[mesg.key].new = false;
@@ -35,18 +36,18 @@ var NetworkTables =
         window.api.onFlagChange((ev, mesg) => {
             keys[mesg.key].flags = mesg.flags;
         });
-        var d3_map = function () {
+        const d3_map = function () {
             this._ = Object.create(null);
             this.forEach = function (f) {
-                for (var key in this._)
+                for (let key in this._)
                     f.call(this, d3_map_unescape(key), this._[key]);
             };
             this.get = function (key) {
                 return this._[d3_map_escape(key)];
             };
             this.getKeys = function () {
-                var keys = [];
-                for (var key in this._)
+                const keys = [];
+                for (let key in this._)
                     keys.push(d3_map_unescape(key));
                 return keys;
             };
@@ -57,13 +58,16 @@ var NetworkTables =
                 return this._[d3_map_escape(key)] = value;
             };
         };
-        var d3_map_proto = '__proto__', d3_map_zero = '\x00';
+        const d3_map_proto = '__proto__', d3_map_zero = '\x00';
+
         function d3_map_escape(key) {
             return (key += '') === d3_map_proto || key[0] === d3_map_zero ? d3_map_zero + encodeURIComponent(key) : encodeURIComponent(key);
         }
+
         function d3_map_unescape(key) {
             return (key += '')[0] === d3_map_zero ? decodeURIComponent(key.slice(1)) : decodeURIComponent(key);
         }
+
         return {
             /**
              * @callback robotConnectionCallback
@@ -78,7 +82,7 @@ var NetworkTables =
              * @param {boolean} [immediateNotify] If true, the function will be immediately called with the current robot connection state
              */
             addRobotConnectionListener(f, immediateNotify) {
-                if(typeof f != 'function') return new Error('Invalid argument')
+                if (typeof f != 'function') return new Error('Invalid argument')
 
                 connectionListeners.push(f);
                 if (immediateNotify)
@@ -97,7 +101,7 @@ var NetworkTables =
              * @param {boolean} [immediateNotify] If true, the function will be immediately called with the current value of all keys
              */
             addGlobalListener(f, immediateNotify) {
-                if(typeof f != 'function') return new Error('Invalid argument')
+                if (typeof f != 'function') return new Error('Invalid argument')
 
                 globalListeners.push(f);
                 if (immediateNotify) {
@@ -114,12 +118,11 @@ var NetworkTables =
              * @param {boolean} [immediateNotify] If true, the function will be immediately called with the current value of the specified key
              */
             addKeyListener(key, f, immediateNotify) {
-                if(typeof key != 'string' || typeof f != 'function') return new Error('Valid Arguments are (string, function)')
+                if (typeof key != 'string' || typeof f != 'function') return new Error('Valid Arguments are (string, function)')
 
                 if (typeof keyListeners[key] != 'undefined') {
                     keyListeners[key].push(f);
-                }
-                else {
+                } else {
                     keyListeners[key] = [f];
                 }
                 if (immediateNotify && key in keys) {
@@ -133,7 +136,7 @@ var NetworkTables =
              * @returns true if a key is present in NetworkTables, false otherwise
              */
             containsKey(key) {
-                if(typeof f != 'string') return false
+                if (typeof f != 'string') return false
                 return key in keys;
             },
             /**
@@ -150,12 +153,11 @@ var NetworkTables =
              * @returns {*|undefined} value of key if present, undefined or defaultValue otherwise
              */
             getValue(key, defaultValue) {
-                if(typeof key != 'string') return new Error('Invalid Argument')
+                if (typeof key != 'string') return new Error('Invalid Argument')
 
                 if (typeof keys[key] != 'undefined') {
                     return keys[key].val;
-                }
-                else {
+                } else {
                     return defaultValue;
                 }
             },
@@ -178,14 +180,13 @@ var NetworkTables =
              * @returns {boolean} True if the websocket is open, False otherwise
              */
             putValue(key, value) {
-                if(typeof key != 'string') return new Error('Invalid Argument')
+                if (typeof key != 'string') return new Error('Invalid Argument')
 
                 if (typeof keys[key] != 'undefined') {
                     keys[key].val = value;
-                    window.api.sendUpdate({ key, val: value, id: keys[key].id, flags: keys[key].flags });
-                }
-                else {
-                    window.api.sendAdd({ key, val: value, flags: 0 });
+                    window.api.sendUpdate({key, val: value, id: keys[key].id, flags: keys[key].flags});
+                } else {
+                    window.api.sendAdd({key, val: value, flags: 0});
                 }
                 return connected;
             },
