@@ -1,16 +1,16 @@
 const gyro_display = document.getElementById('gyro');
 const wheels = [...gyro_display.children];
-NetworkTables.addKeyListener('/SmartDashboard/heading pose', (_, value) => {
-    gyro_display.style.setProperty('--angle', value + 'deg');
+NetworkTables.addKeyListener('/SmartDashboard/heading', (_, value) => {
+    gyro_display.style.setProperty('--angle', value);
 });
 for(let i = 0; i < 4; i++) {
     NetworkTables.addKeyListener(`/SmartDashboard/Module ${i + 1} current rotation`, (_, value) => {
-        wheels[i].style.setProperty('--angle', value + 'deg');
+        wheels[i].style.setProperty('--angle', value);
     });
 }
 
 const time_display = document.getElementById('time');
-NetworkTables.addKeyListener('/robot/time', (key, value) => {
+NetworkTables.addKeyListener('/SmartDashboard/matchTime', (key, value) => {
     time_display.textContent = value < 0 ? '0:00' : Math.floor(value / 60) + ':' + (value % 60 < 10 ? '0' : '') + value % 60;
 });
 

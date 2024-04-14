@@ -37,6 +37,7 @@ body:not([data-robot-connected])::before {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 #content {
@@ -55,7 +56,7 @@ body:not([data-robot-connected])::before {
     flex-direction: column;
 }
 
-#camera, #field-estimate {
+.camera, #field-estimate {
     flex-grow: 1;
     width: 100%;
 }
@@ -77,12 +78,26 @@ body:not([data-robot-connected])::before {
     width: 80px;
     height: 80px;
 
-    outline: 4px solid white;
-    outline-offset: -12px;
-    transform: rotate(calc(0 - var(--angle)));
+    outline: 2px solid white;
+    outline-offset: -16px;
+    transform: rotate(calc(0deg - var(--angle)));
+}
+#gyro::before {
+    position: absolute;
+    content: "=>";
+    font-family: "JetBrains Mono", monospace;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-90deg);
 }
 
 .swerve-wheel {
+    --angle: 0;
+    --module-angle: 0;
+
     display: block;
     width: 10px;
     height: 10px;
@@ -91,26 +106,37 @@ body:not([data-robot-connected])::before {
     position: absolute;
     top: 35px;
     left: 35px;
+
+    transform: rotate(var(--module-angle)) translateX(20px) rotate(calc(0deg - var(--module-angle))) rotate(calc(0deg - var(--angle)));
 }
 .swerve-wheel::before {
     content: "";
-    width: 0;
+    display: block;
+    width: 2px;
     height: 10px;
-    
+    position: absolute;
+    background-color: white;
+    top: 0;
+    left: 4px;
 }
 
-.swerve-wheel:nth-child(1) { --module-angle: -45deg }
-.swerve-wheel:nth-child(2) { --module-angle: 45deg }
-.swerve-wheel:nth-child(3) { --module-angle: -135deg }
-.swerve-wheel:nth-child(4) { --module-angle: 135deg }
+.swerve-wheel:nth-child(1) { --module-angle: -135deg }
+.swerve-wheel:nth-child(2) { --module-angle: -45deg }
+.swerve-wheel:nth-child(3) { --module-angle: 135deg }
+.swerve-wheel:nth-child(4) { --module-angle: 45deg }
 
-#camera {
+.camera {
     overflow: hidden;
     background-color: #333;
-    background-image: url("http://limelight.local:5800/");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+#camera1 {
+    background-image: url("http://limelight.local:5800/");
+}
+#camera2 {
+    background-image: url("http://10.46.39.11/");
 }
 
 #field-estimate {
